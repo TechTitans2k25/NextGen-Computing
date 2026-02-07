@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextGen Computing 2025</title>
+    <title>NextGen Computing 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +100,8 @@
 <body class="bg-slate-50 text-slate-900 dark:bg-[#0f172a] dark:text-slate-100">
 
     <div id="particles-container"></div>
+    
+    <div id="toast-container" class="fixed top-24 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <header class="hidden sm:block fixed w-full top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
         <nav class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
@@ -113,7 +115,7 @@
                 <a href="#" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors" data-page="register">Register</a>
                 <a href="#" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors" data-page="about">Contact Us</a>
                 
-                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700">
+                <button id="theme-toggle" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                     <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                 </button>
@@ -123,7 +125,7 @@
 
     <header class="sm:hidden fixed w-full top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 h-16 flex justify-between items-center">
         <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">NEXT<span class="text-brand-500">GEN</span></span>
-        <button id="theme-toggle-mobile" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400">
+        <button id="theme-toggle-mobile" class="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 transition-colors">
              <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
              <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
         </button>
@@ -389,10 +391,10 @@
         <div id="success-modal" class="ticket-card bg-white dark:bg-slate-800 w-full max-w-sm mx-4 p-0 rounded-3xl shadow-2xl overflow-hidden hidden transform transition-all">
              <div class="bg-brand-600 p-5 text-center">
                  <h2 class="text-xl font-bold text-white tracking-wide uppercase">Entry Pass</h2>
-                 <p class="text-brand-100 text-xs mt-1">NextGen Computing 2025</p>
+                 <p class="text-brand-100 text-xs mt-1">NextGen Computing 2026</p>
              </div>
              <div class="p-8 text-center">
-                 <div id="qrcode" class="flex justify-center mb-6"></div>
+                 <div id="qrcode" class="flex justify-center mb-6 bg-white p-2 rounded-lg inline-block mx-auto"></div>
                  <h3 id="pass-name" class="text-lg font-bold text-slate-900 dark:text-white uppercase mb-1">Name</h3>
                  <p id="pass-reg" class="text-sm text-slate-500 dark:text-slate-400 font-mono tracking-wider">Reg No</p>
                  <div class="mt-6 pt-6 border-t border-dashed border-slate-300 dark:border-slate-600">
@@ -411,116 +413,103 @@
     </div>
 
     <script>
-        // --- 1. THEME LOGIC (FIXED) ---
-        const html = document.documentElement;
-        
-        // Define buttons safely
-        const desktopToggle = document.getElementById('theme-toggle');
-        const mobileToggle = document.getElementById('theme-toggle-mobile');
-        const btns = [desktopToggle, mobileToggle].filter(Boolean); // Remove nulls if any
-
-        // Function to apply theme class
-        function applyTheme(isDark) {
-            if(isDark) {
-                html.classList.add('dark');
-                localStorage.theme = 'dark';
-            } else {
-                html.classList.remove('dark');
-                localStorage.theme = 'light';
-            }
-            updateIcons(isDark);
+        // --- 1. MODERN NOTIFICATION SYSTEM (TOASTS) ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = type === 'success' ? 'bg-emerald-500 text-white shadow-emerald-500/20' : 'bg-red-500 text-white shadow-red-500/20';
+            toast.className = `${colors} pointer-events-auto min-w-[300px] max-w-sm px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 transform translate-x-10 opacity-0 transition-all duration-300 ease-out border border-white/10 backdrop-blur-md`;
+            toast.innerHTML = `<div class="bg-white/20 rounded-full p-1">${type === 'success' ? '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>' : '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>'}</div><div class="flex-1 text-sm font-semibold tracking-wide">${message}</div>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-x-10', 'opacity-0'));
+            setTimeout(() => { toast.classList.add('translate-x-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        // Function to visually update icons
-        function updateIcons(isDark) {
-            btns.forEach(btn => {
+        // --- 2. ROBUST THEME LOGIC ---
+        const html = document.documentElement;
+        const themeBtns = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+        function syncThemeUI(isDark) {
+            isDark ? html.classList.add('dark') : html.classList.remove('dark');
+            themeBtns.forEach(btn => {
                 const sun = btn.querySelector('svg:first-child');
                 const moon = btn.querySelector('svg:last-child');
-                if(sun && moon) {
-                    if(isDark) {
-                        sun.classList.remove('hidden');
-                        moon.classList.add('hidden');
-                    } else {
-                        sun.classList.add('hidden');
-                        moon.classList.remove('hidden');
-                    }
-                }
+                if(isDark) { sun.classList.remove('hidden'); moon.classList.add('hidden'); }
+                else { sun.classList.add('hidden'); moon.classList.remove('hidden'); }
             });
         }
+        function toggleTheme() {
+            const isDark = !html.classList.contains('dark');
+            localStorage.theme = isDark ? 'dark' : 'light';
+            syncThemeUI(isDark);
+        }
+        const savedTheme = localStorage.theme;
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        syncThemeUI(savedTheme === 'dark' || (!savedTheme && systemDark));
+        themeBtns.forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleTheme(); }));
 
-        // Initial Load
-        const initialDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        applyTheme(initialDark);
-
-        // Click Events
-        btns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent bubbling issues
-                const isDarkNow = html.classList.contains('dark');
-                applyTheme(!isDarkNow);
-            });
-        });
-
-        // --- 2. NAV LOGIC ---
-        const pages = document.querySelectorAll('.page'), navLinks = document.querySelectorAll('.nav-link'), mobileBtns = document.querySelectorAll('.mobile-icon-btn'), navBtns = document.querySelectorAll('.nav-link-button');
+        // --- 3. PAGE NAVIGATION ---
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link, .mobile-icon-btn, .nav-link-button');
         function showPage(id) {
-            pages.forEach(p => p.classList.remove('active')); document.getElementById(`page-${id}`).classList.add('active');
-            navLinks.forEach(l => l.classList.toggle('text-brand-500', l.dataset.page === id));
-            mobileBtns.forEach(b => b.classList.toggle('active', b.dataset.page === id));
+            pages.forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(`page-${id}`);
+            if(target) target.classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('text-brand-500', l.dataset.page === id));
+            document.querySelectorAll('.mobile-icon-btn').forEach(b => b.classList.toggle('active', b.dataset.page === id));
             window.scrollTo(0,0);
         }
-        [...navLinks, ...mobileBtns, ...navBtns].forEach(l => l.addEventListener('click', (e) => { e.preventDefault(); showPage(l.dataset.page); }));
-        showPage('home');
+        navLinks.forEach(l => l.addEventListener('click', (e) => { e.preventDefault(); showPage(l.dataset.page); }));
 
-        // --- 3. FILE UPLOAD ---
-        const fileInput=document.getElementById('file-upload'), fileName=document.getElementById('file-name-display'), hiddenBase64=document.getElementById('ppt_base64'), hiddenName=document.getElementById('ppt_filename'), dropArea=document.getElementById('drop-area');
-        dropArea.addEventListener('drop', (e)=>{e.preventDefault(); handleFiles(e.dataTransfer.files)});
-        dropArea.addEventListener('dragover', (e)=>{e.preventDefault(); dropArea.classList.add('is-active')});
-        dropArea.addEventListener('dragleave', (e)=>{e.preventDefault(); dropArea.classList.remove('is-active')});
-        fileInput.addEventListener('change', function(){handleFiles(this.files)});
+        // --- 4. FILE UPLOAD HANDLING ---
+        const fileInput = document.getElementById('file-upload'), fileName = document.getElementById('file-name-display'), hiddenBase64 = document.getElementById('ppt_base64'), hiddenName = document.getElementById('ppt_filename'), dropArea = document.getElementById('drop-area');
         function handleFiles(files) {
-            if(files.length){
-                if(files[0].size > 10*1024*1024){alert("File > 10MB"); return;}
-                fileName.textContent = "📎 " + files[0].name; hiddenName.value = files[0].name;
-                const r = new FileReader(); r.readAsDataURL(files[0]);
-                r.onload=()=>{hiddenBase64.value=r.result};
+            if(files.length) {
+                const file = files[0];
+                if(file.size > 10 * 1024 * 1024) { showToast("File is too large (Max 10MB)", "error"); return; }
+                fileName.textContent = "📎 " + file.name; hiddenName.value = file.name;
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = () => { hiddenBase64.value = reader.result; };
+                showToast("Presentation attached successfully!");
             }
         }
+        dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('is-active'); });
+        dropArea.addEventListener('dragleave', (e) => { e.preventDefault(); dropArea.classList.remove('is-active'); });
+        dropArea.addEventListener('drop', (e) => { e.preventDefault(); dropArea.classList.remove('is-active'); handleFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', function() { handleFiles(this.files); });
 
-        // --- 4. FORM SUBMIT ---
-        const form=document.getElementById("registration-form"), submitBtn=document.getElementById("submit-button"), loading=document.getElementById("loading-backdrop"), modalBack=document.getElementById("modal-backdrop"), success=document.getElementById("success-modal"), error=document.getElementById("error-modal");
-        
-        // YOUR SCRIPT URL
+        // --- 5. FORM SUBMISSION & QR FIX ---
+        const form = document.getElementById("registration-form"), submitBtn = document.getElementById("submit-button"), loading = document.getElementById("loading-backdrop"), modalBack = document.getElementById("modal-backdrop"), successModal = document.getElementById("success-modal"), errorModal = document.getElementById("error-modal");
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpLPPYXy4uTjt5dOFKaS0pAoSdjJQhMDhkA4hkO-oyi3HrFRCIU-Mxj_egmZOv9zao/exec"; 
-        
+
         form.addEventListener("submit", (e) => {
             e.preventDefault();
-            if(!hiddenBase64.value) { alert("Please upload PPT."); return; }
-            submitBtn.disabled=true; submitBtn.textContent="Processing..."; loading.style.display="flex";
-            
-            fetch(SCRIPT_URL, {method: "POST", body: new FormData(form)})
-            .then(r=>r.json()).then(d=>{
-                loading.style.display="none"; modalBack.style.display="flex";
-                if(d.result==="success"){
-                    success.style.display="block"; 
-                    document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), {
-                        text: "NEXTGEN-" + d.reg_no,
-                        width: 128, height: 128,
-                        colorDark : "#000000", colorLight : "#ffffff"
+            if(!hiddenBase64.value) { showToast("Please upload your presentation first.", "error"); return; }
+            submitBtn.disabled = true; submitBtn.innerHTML = `<span class="animate-pulse">Processing...</span>`; loading.style.display = "flex";
+            fetch(SCRIPT_URL, { method: "POST", body: new FormData(form) }).then(r => r.json()).then(d => {
+                loading.style.display = "none"; modalBack.style.display = "flex";
+                if(d.result === "success") {
+                    successModal.classList.remove('hidden'); successModal.classList.add('block');
+                    const qrContainer = document.getElementById("qrcode"); qrContainer.innerHTML = "";
+                    requestAnimationFrame(() => {
+                        new QRCode(qrContainer, { text: "NEXTGEN-" + d.reg_no, width: 140, height: 140, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
                     });
-                    document.getElementById('pass-name').innerText = d.lead_name;
-                    document.getElementById('pass-reg').innerText = d.reg_no;
-                    form.reset(); fileName.textContent=""; hiddenBase64.value="";
+                    document.getElementById('pass-name').innerText = d.lead_name; document.getElementById('pass-reg').innerText = d.reg_no;
+                    form.reset(); fileName.textContent = ""; hiddenBase64.value = ""; showToast("Registration Successful!");
                 } else {
-                    error.style.display="block"; document.getElementById("error-message").textContent=d.message;
+                    errorModal.classList.remove('hidden'); errorModal.classList.add('block'); document.getElementById("error-message").textContent = d.message; showToast("Registration Failed", "error");
                 }
-                submitBtn.disabled=false; submitBtn.textContent="Submit Registration";
-            }).catch(()=>{loading.style.display="none"; modalBack.style.display="flex"; error.style.display="block"; submitBtn.disabled=false;});
+                submitBtn.disabled = false; submitBtn.textContent = "Submit Registration";
+            }).catch(() => {
+                loading.style.display = "none"; modalBack.style.display = "flex"; errorModal.classList.remove('hidden'); errorModal.classList.add('block'); document.getElementById("error-message").textContent = "Network error. Please try again."; submitBtn.disabled = false; submitBtn.textContent = "Submit Registration";
+            });
         });
-        function closeModal(){modalBack.style.display="none";success.style.display="none";error.style.display="none";}
 
-        tsParticles.load("particles-container", {fpsLimit:60, particles:{color:{value:"#0ea5e9"}, links:{color:"#8b5cf6", distance:150, enable:true, opacity:0.2, width:1}, move:{enable:true, speed:1}, number:{density:{enable:true, area:800}, value:40}, opacity:{value:0.5}, size:{value:{min:1, max:3}}}, detectRetina:true});
+        function closeModal() {
+            modalBack.style.display = "none"; successModal.classList.add('hidden'); successModal.classList.remove('block'); errorModal.classList.add('hidden'); errorModal.classList.remove('block');
+        }
+
+        // --- 6. PARTICLES ---
+        tsParticles.load("particles-container", { fpsLimit: 60, particles: { color: { value: "#0ea5e9" }, links: { color: "#8b5cf6", distance: 150, enable: true, opacity: 0.2, width: 1 }, move: { enable: true, speed: 1 }, number: { density: { enable: true, area: 800 }, value: 40 }, opacity: { value: 0.5 }, size: { value: { min: 1, max: 3 } } }, detectRetina: true });
     </script>
 </body>
 </html>
